@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 
 # ------------------------------
 # PAGE CONFIG
@@ -11,7 +12,7 @@ st.set_page_config(
 )
 
 # ------------------------------
-# SESSION STATE
+# SESSION STATE (Router + Auth)
 # ------------------------------
 if "page" not in st.session_state:
     st.session_state.page = "Home"
@@ -20,7 +21,7 @@ if "authorized" not in st.session_state:
     st.session_state.authorized = False
 
 # ------------------------------
-# GLOBAL STYLES
+# STYLING
 # ------------------------------
 st.markdown("""
 <style>
@@ -43,6 +44,7 @@ st.markdown("""
     text-align: center;
 }
 
+/* Buttons */
 .stButton>button {
     background: #ec4899;
     color: white;
@@ -57,6 +59,7 @@ st.markdown("""
     transform: scale(1.02);
 }
 
+/* Dividers */
 hr {
     border: 1px solid rgba(255,255,255,0.1);
 }
@@ -74,15 +77,19 @@ with st.sidebar:
     st.caption("© 2026 BoardFlow Digital")
 
 # ------------------------------
-# HOME PAGE
+# ROUTER LOGIC
 # ------------------------------
-if st.session_state.page == "Home":
+page = st.session_state.page
+
+# ==============================
+# HOME PAGE
+# ==============================
+if page == "Home":
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("BoardFlow Pro")
     st.markdown("##### Professional Pinterest Business Intelligence")
     st.divider()
 
-    # Authorization Button
     if not st.session_state.authorized:
         if st.button("Authorize Pinterest Account"):
             st.session_state.authorized = True
@@ -90,7 +97,7 @@ if st.session_state.page == "Home":
     else:
         st.success("Authorized!")
 
-        # Dashboard Preview Metrics
+        # Dashboard Metrics Preview
         col1, col2, col3 = st.columns(3)
         metrics = {"Boards": 12, "Pins": 482, "Monthly Views": 124_000}
         deltas = {"Boards": 2, "Pins": 18, "Monthly Views": "5%"}
@@ -103,13 +110,16 @@ if st.session_state.page == "Home":
             st.write("• Best posting time: 7PM – 9PM")
             st.write("• Pin save rate: 8.4%")
 
+    # Link to Privacy Policy as a “full page”
+    if st.button("View Privacy Policy"):
+        st.session_state.page = "Privacy Policy"
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------------------
+# ==============================
 # DASHBOARD PAGE
-# ------------------------------
-elif st.session_state.page == "Dashboard":
-
+# ==============================
+elif page == "Dashboard":
     if not st.session_state.authorized:
         st.warning("You must authorize your Pinterest account first.")
         st.stop()
@@ -135,10 +145,10 @@ elif st.session_state.page == "Dashboard":
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------------------
-# PRIVACY PAGE (Full Separate Page)
-# ------------------------------
-elif st.session_state.page == "Privacy Policy":
+# ==============================
+# PRIVACY POLICY PAGE
+# ==============================
+elif page == "Privacy Policy":
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("🛡️ Privacy & Data Policy")
 
@@ -157,6 +167,7 @@ No permanent external storage. Processing occurs in your active session.
 You may revoke access anytime via Pinterest's Apps and Websites settings.
 """)
 
+    # Button to go back to Home page
     if st.button("← Back to Home"):
         st.session_state.page = "Home"
 
