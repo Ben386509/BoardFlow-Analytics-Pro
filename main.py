@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import time
 
 # ------------------------------
 # PAGE CONFIG
@@ -21,7 +20,7 @@ if "authorized" not in st.session_state:
     st.session_state.authorized = False
 
 # ------------------------------
-# GLOBAL STYLING
+# GLOBAL STYLES
 # ------------------------------
 st.markdown("""
 <style>
@@ -44,7 +43,6 @@ st.markdown("""
     text-align: center;
 }
 
-/* Buttons */
 .stButton>button {
     background: #ec4899;
     color: white;
@@ -59,7 +57,6 @@ st.markdown("""
     transform: scale(1.02);
 }
 
-/* Dividers */
 hr {
     border: 1px solid rgba(255,255,255,0.1);
 }
@@ -80,7 +77,6 @@ with st.sidebar:
 # HOME PAGE
 # ------------------------------
 if st.session_state.page == "Home":
-
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("BoardFlow Pro")
     st.markdown("##### Professional Pinterest Business Intelligence")
@@ -140,10 +136,9 @@ elif st.session_state.page == "Dashboard":
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ------------------------------
-# PRIVACY PAGE
+# PRIVACY PAGE (Full Separate Page)
 # ------------------------------
 elif st.session_state.page == "Privacy Policy":
-
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("🛡️ Privacy & Data Policy")
 
@@ -161,4 +156,8 @@ No permanent external storage. Processing occurs in your active session.
 ### 4. Revocation
 You may revoke access anytime via Pinterest's Apps and Websites settings.
 """)
+
+    if st.button("← Back to Home"):
+        st.session_state.page = "Home"
+
     st.markdown('</div>', unsafe_allow_html=True)
