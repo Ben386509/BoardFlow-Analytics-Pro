@@ -1,64 +1,102 @@
 import streamlit as st
+import os
 
-# --- 1. SETTINGS & THEME ---
-st.set_page_config(page_title="BoardFlow Pro", page_icon="📌", layout="centered")
+# --- PAGE CONFIGURATION ---
+st.set_page_config(
+    page_title="BoardFlow | Pro Analytics",
+    page_icon="📌",
+    layout="centered"
+)
 
-# Custom Apple-style CSS
+# --- SECURE CONFIG LOADING (Cloud + Local Compatible) ---
+CLIENT_ID = st.secrets.get(
+    "PINTEREST_CLIENT_ID",
+    os.environ.get("PINTEREST_CLIENT_ID")
+)
+
+# --- APPLE-INSPIRED CUSTOM CSS ---
 st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-    html, body, [class*="css"] { 
-        font-family: 'Inter', sans-serif; 
-        background-color: #f5f5f7; 
-    }
-    .main-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(20px);
-        border-radius: 30px;
-        padding: 40px;
-        border: 1px solid rgba(255,255,255,0.3);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-    }
-    .stButton>button {
-        background: #0071e3; 
-        color: white; 
-        border-radius: 20px;
-        width: 100%; 
-        border: none; 
-        padding: 10px; 
-        font-weight: 600;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
-# --- 2. UI ---
-st.markdown('<div class="main-card">', unsafe_allow_html=True)
+.stApp {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 42px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.06);
+    text-align: center;
+    margin-top: 60px;
+}
+
+h1 {
+    color: #1d1d1f;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+p {
+    color: #6e6e73;
+}
+
+.stButton>button {
+    background: #000000;
+    color: #ffffff;
+    border-radius: 14px;
+    border: none;
+    padding: 12px 28px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.25s ease;
+}
+
+.stButton>button:hover {
+    background: #2c2c2e;
+    transform: translateY(-2px);
+}
+</style>
+""", unsafe_allow_html=True)
+
+# --- MAIN UI ---
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
 st.title("BoardFlow")
-st.write("Professional Pinterest Analytics & Automation")
+st.caption("Professional Pinterest Business Intelligence")
 
 st.divider()
 
-col1, col2 = st.columns(2)
-col1.metric("API Version", "v5.0")
-col2.metric("Status", "Reviewing")
-
-st.info("OAuth 2.0 connection is ready. Awaiting Client Secret from Pinterest.")
-
-if st.button("Connect Pinterest Account"):
-    st.write("Redirecting to secure OAuth portal...")
+if not CLIENT_ID:
+    st.info("System Status: Developer Verification Mode")
+    st.write(
+        "The Pinterest v5 API connection is currently in standby. "
+        "OAuth 2.0 authorisation will initialise once valid credentials "
+        "have been configured."
+    )
+else:
+    st.success("System Status: Active")
+    if st.button("Authorise via Pinterest"):
+        st.write("Redirecting to secure Pinterest authentication...")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 3. FOOTER (Essential for Approval) ---
+# --- FOOTER ---
 st.markdown("---")
 st.markdown(
     """
-    <div style='text-align: center; font-size: 13px; color: gray;'>
-    © 2026 BoardFlow Digital. 
-    <a href="https://github.com/YOUR_USER/YOUR_REPO/blob/main/PRIVACY.md" target="_blank">
-    Privacy Policy
-    </a>
+    <div style='text-align: center; font-size: 0.8rem; color: #6e6e73;'>
+        © 2026 BoardFlow Digital. Built for Pinterest Developers.<br>
+        <a href='https://github.com/YOUR_USER/YOUR_REPO/blob/main/PRIVACY.md' 
+           target='_blank' 
+           style='text-decoration:none;'>
+           Privacy Policy
+        </a>
     </div>
     """,
     unsafe_allow_html=True
