@@ -1,186 +1,167 @@
 import streamlit as st
 import os
+import plotly.express as px
+import pandas as pd
+import time
 
-# ---------------------------------
-# PAGE CONFIG (MUST BE FIRST)
-# ---------------------------------
+# ------------------------------
+# PAGE CONFIG
+# ------------------------------
 st.set_page_config(
     page_title="BoardFlow Pro",
     page_icon="📌",
-    layout="centered"
+    layout="wide"
 )
 
-# ---------------------------------
+# ------------------------------
 # SESSION STATE
-# ---------------------------------
+# ------------------------------
 if "authorized" not in st.session_state:
     st.session_state.authorized = False
 
-# ---------------------------------
-# SIMPLE ROUTER USING QUERY PARAMS
-# ---------------------------------
-query_params = st.query_params
-page = query_params.get("page", "home")
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
 
-# ---------------------------------
-# GLOBAL STYLES
-# ---------------------------------
+# ------------------------------
+# STYLING
+# ------------------------------
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-html, body, [class*="css"] {
+.stApp {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
     font-family: 'Inter', sans-serif;
 }
 
-.stApp {
-    background: linear-gradient(135deg, #f5f7fa 0%, #dfe9f3 100%);
-}
-
+/* Glass card */
 .glass-card {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.4);
-    padding: 45px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+    background: rgba(30, 41, 59, 0.85);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
     text-align: center;
 }
 
-.status-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-standby {
-    background: #fff4e5;
-    color: #b26a00;
-}
-
-.status-active {
-    background: #e6f7ed;
-    color: #0a7a32;
-}
-
+/* Buttons */
 .stButton>button {
-    background: black;
+    background: #ec4899;
     color: white;
-    border-radius: 12px;
-    border: none;
+    border-radius: 10px;
     padding: 12px 28px;
     font-weight: 600;
     width: 100%;
-    transition: 0.2s ease;
+    transition: 0.2s;
 }
-
 .stButton>button:hover {
+    background: #db2777;
     transform: scale(1.02);
-}
-
-.footer-link {
-    text-align: center;
-    margin-top: 20px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------------------
+# ------------------------------
+# SIDEBAR NAVIGATION
+# ------------------------------
+with st.sidebar:
+    st.title("📌 BoardFlow Pro")
+    page = st.radio("Navigation", ["Home", "Dashboard", "Privacy Policy"])
+    st.divider()
+    st.caption("© 2026 BoardFlow Digital")
+    st.session_state.page = page
+
+# ------------------------------
 # HOME PAGE
-# ---------------------------------
-if page == "home":
+# ------------------------------
+if st.session_state.page == "Home":
 
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-
     st.title("BoardFlow Pro")
-    st.markdown("#### Professional Pinterest Business Intelligence")
-
+    st.markdown("##### Professional Pinterest Business Intelligence")
     st.divider()
 
     CLIENT_ID = os.environ.get("PINTEREST_CLIENT_ID")
-
     if not CLIENT_ID:
-        st.markdown(
-            '<span class="status-badge status-standby">Developer Verification Mode</span>',
-            unsafe_allow_html=True
-        )
-        st.write("")
-        st.info("Pinterest V5 API connection is currently in standby mode.")
-        st.caption("Secure OAuth 2.0 gateway will activate once credentials are configured.")
+        st.warning("Developer Verification Mode")
+        st.caption("OAuth will activate once credentials are configured.")
     else:
-        st.markdown(
-            '<span class="status-badge status-active">System Active</span>',
-            unsafe_allow_html=True
-        )
-        st.write("")
         if st.button("Authorize Pinterest Account"):
             st.session_state.authorized = True
-            st.success("Authorization flow initiated (OAuth placeholder).")
+            st.success("Authorization initiated.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Dashboard Preview
     if st.session_state.authorized:
-        st.write("")
-        st.title("📊 Analytics Preview")
-
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.subheader("Dashboard Preview")
         col1, col2, col3 = st.columns(3)
 
-        with col1:
-            st.metric("Boards", "12", "+2")
+        # Animated metric simulation
+        metrics = {"Boards": 12, "Total Pins": 482, "Monthly Views": 124_000}
+        deltas = {"Boards": 2, "Total Pins": 18, "Monthly Views": "5%"}
+        for col, key in zip([col1, col2, col3], metrics.keys()):
+            col.metric(label=key, value=metrics[key], delta=deltas[key])
 
-        with col2:
-            st.metric("Total Pins", "482", "+18")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        with col3:
-            st.metric("Monthly Views", "124K", "+5%")
-
-        st.divider()
-
+        # Engagement Insights
         with st.expander("Engagement Insights"):
             st.write("• Top performing board: Modern Interiors")
             st.write("• Best posting time: 7PM – 9PM")
             st.write("• Pin save rate: 8.4%")
 
-    st.divider()
+# ------------------------------
+# DASHBOARD PAGE
+# ------------------------------
+elif st.session_state.page == "Dashboard":
+    if not st.session_state.authorized:
+        st.warning("You must authorize your Pinterest account first.")
+        st.stop()
 
-    # Privacy Link
-    if st.button("🛡️ Privacy Policy"):
-        st.query_params["page"] = "privacy"
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.title("📊 Analytics Dashboard")
 
-    st.caption("© 2026 BoardFlow Digital")
+    # Sample Charts
+    st.subheader("Monthly Views")
+    df_views = pd.DataFrame({
+        "Month": ["Jan","Feb","Mar","Apr","May","Jun"],
+        "Views": [80_000, 90_000, 95_000, 110_000, 120_000, 124_000]
+    })
+    fig_views = px.line(df_views, x="Month", y="Views", markers=True, template="plotly_dark")
+    st.plotly_chart(fig_views, use_container_width=True)
 
+    st.subheader("Pins per Board")
+    df_pins = pd.DataFrame({
+        "Board": ["Home Decor", "Fashion", "Travel", "Food", "Tech"],
+        "Pins": [120, 85, 60, 50, 35]
+    })
+    fig_pins = px.bar(df_pins, x="Board", y="Pins", template="plotly_dark", color="Pins", color_continuous_scale=px.colors.sequential.Pinkyl)
+    st.plotly_chart(fig_pins, use_container_width=True)
 
-# ---------------------------------
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ------------------------------
 # PRIVACY PAGE
-# ---------------------------------
-elif page == "privacy":
-
+# ------------------------------
+elif st.session_state.page == "Privacy Policy":
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("🛡️ Privacy & Data Policy")
 
     st.markdown("""
 ### 1. Data Collection
-BoardFlow connects using official OAuth 2.0 protocols.  
-We never see or store your Pinterest password.
+BoardFlow uses official OAuth 2.0 protocols.  
+We never access your password.
 
 ### 2. Data Usage
-We access only boards and pins you explicitly authorize.  
-Data is used strictly for analytics generation.
+Only boards and pins you authorize are accessed.
 
 ### 3. Data Storage
-We do not permanently store user data.  
-Processing occurs within secure encrypted sessions.
+No permanent external storage.
 
 ### 4. Revocation
-You may revoke access anytime via Pinterest's  
-**Apps and Websites** settings.
+You may revoke access anytime in Pinterest's Apps and Websites settings.
 """)
-
-    st.divider()
-
-    if st.button("← Back to Home"):
-        st.query_params["page"] = "home"
-
-    st.caption("© 2026 BoardFlow Digital")
+    st.markdown('</div>', unsafe_allow_html=True)
