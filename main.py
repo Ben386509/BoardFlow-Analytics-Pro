@@ -11,16 +11,16 @@ st.set_page_config(
 )
 
 # ------------------------------
-# SESSION STATE
+# SESSION STATE ROUTER & AUTH
 # ------------------------------
 if "page" not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = "home"
 
 if "authorized" not in st.session_state:
     st.session_state.authorized = False
 
 # ------------------------------
-# STYLING
+# CSS STYLING (Apple/Amazon-like premium)
 # ------------------------------
 st.markdown("""
 <style>
@@ -28,36 +28,44 @@ st.markdown("""
 
 .stApp {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: white;
+    color: #e0e0e0;
     font-family: 'Inter', sans-serif;
 }
 
 .glass-card {
-    background: rgba(30, 41, 59, 0.85);
-    border-radius: 20px;
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 24px;
     padding: 40px;
-    margin-bottom: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    margin-bottom: 30px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
     text-align: center;
+    transition: transform 0.2s ease;
+}
+.glass-card:hover {
+    transform: scale(1.02);
 }
 
 .stButton>button {
     background: #ec4899;
     color: white;
-    border-radius: 10px;
-    padding: 12px 28px;
+    border-radius: 12px;
+    padding: 14px 30px;
     font-weight: 600;
     width: 100%;
-    transition: 0.2s;
+    transition: 0.3s ease;
 }
 .stButton>button:hover {
     background: #db2777;
-    transform: scale(1.02);
+    transform: scale(1.03);
 }
 
 hr {
     border: 1px solid rgba(255,255,255,0.1);
+}
+
+h1,h2,h3,h4,h5 {
+    color: #f3f4f6;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -73,7 +81,7 @@ with st.sidebar:
     st.caption("© 2026 BoardFlow Digital")
 
 # ------------------------------
-# ROUTER / PAGES
+# ROUTER / PAGE LOGIC
 # ------------------------------
 page = st.session_state.page
 
@@ -86,30 +94,26 @@ if page == "Home":
     st.markdown("##### Professional Pinterest Business Intelligence")
     st.divider()
 
-    # Authorization
     if not st.session_state.authorized:
         if st.button("Authorize Pinterest Account"):
             st.session_state.authorized = True
             st.success("Authorization simulated (OAuth placeholder).")
     else:
-        st.success("Authorized!")
-
-        # Metrics preview
+        st.success("✅ Authorized!")
         col1, col2, col3 = st.columns(3)
         metrics = {"Boards": 12, "Pins": 482, "Monthly Views": 124_000}
         deltas = {"Boards": 2, "Pins": 18, "Monthly Views": "5%"}
         for col, key in zip([col1, col2, col3], metrics.keys()):
             col.metric(label=key, value=metrics[key], delta=deltas[key])
-
+        
         st.divider()
         with st.expander("Engagement Insights"):
             st.write("• Top performing board: Modern Interiors")
             st.write("• Best posting time: 7PM – 9PM")
             st.write("• Pin save rate: 8.4%")
 
-    # Button to go to Privacy Policy
     if st.button("View Privacy Policy"):
-        st.session_state.page = "Privacy Policy"
+        st.session_state.page = "privacy"
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -145,7 +149,7 @@ elif page == "Dashboard":
 # ==============================
 # PRIVACY POLICY PAGE
 # ==============================
-elif page == "Privacy Policy":
+elif page == "privacy":
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("🛡️ Privacy & Data Policy")
 
@@ -164,7 +168,7 @@ No permanent external storage. Processing occurs in your active session.
 You may revoke access anytime via Pinterest's Apps and Websites settings.
 """)
 
-    # Back to Home button
+    # Back button
     if st.button("← Back to Home"):
         st.session_state.page = "Home"
 
