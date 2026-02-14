@@ -1,6 +1,4 @@
 import streamlit as st
-import os
-import plotly.express as px
 import pandas as pd
 import time
 
@@ -16,14 +14,14 @@ st.set_page_config(
 # ------------------------------
 # SESSION STATE
 # ------------------------------
-if "authorized" not in st.session_state:
-    st.session_state.authorized = False
-
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
+if "authorized" not in st.session_state:
+    st.session_state.authorized = False
+
 # ------------------------------
-# STYLING
+# GLOBAL STYLING
 # ------------------------------
 st.markdown("""
 <style>
@@ -35,7 +33,7 @@ st.markdown("""
     font-family: 'Inter', sans-serif;
 }
 
-/* Glass card */
+/* Glass cards */
 .glass-card {
     background: rgba(30, 41, 59, 0.85);
     border-radius: 20px;
@@ -60,6 +58,11 @@ st.markdown("""
     background: #db2777;
     transform: scale(1.02);
 }
+
+/* Dividers */
+hr {
+    border: 1px solid rgba(255,255,255,0.1);
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -68,10 +71,10 @@ st.markdown("""
 # ------------------------------
 with st.sidebar:
     st.title("📌 BoardFlow Pro")
-    page = st.radio("Navigation", ["Home", "Dashboard", "Privacy Policy"])
+    selection = st.radio("Navigation", ["Home", "Dashboard", "Privacy Policy"])
+    st.session_state.page = selection
     st.divider()
     st.caption("© 2026 BoardFlow Digital")
-    st.session_state.page = page
 
 # ------------------------------
 # HOME PAGE
@@ -83,40 +86,34 @@ if st.session_state.page == "Home":
     st.markdown("##### Professional Pinterest Business Intelligence")
     st.divider()
 
-    CLIENT_ID = os.environ.get("PINTEREST_CLIENT_ID")
-    if not CLIENT_ID:
-        st.warning("Developer Verification Mode")
-        st.caption("OAuth will activate once credentials are configured.")
-    else:
+    # Authorization Button
+    if not st.session_state.authorized:
         if st.button("Authorize Pinterest Account"):
             st.session_state.authorized = True
-            st.success("Authorization initiated.")
+            st.success("Authorization simulated (OAuth placeholder).")
+    else:
+        st.success("Authorized!")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    if st.session_state.authorized:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("Dashboard Preview")
+        # Dashboard Preview Metrics
         col1, col2, col3 = st.columns(3)
-
-        # Animated metric simulation
-        metrics = {"Boards": 12, "Total Pins": 482, "Monthly Views": 124_000}
-        deltas = {"Boards": 2, "Total Pins": 18, "Monthly Views": "5%"}
+        metrics = {"Boards": 12, "Pins": 482, "Monthly Views": 124_000}
+        deltas = {"Boards": 2, "Pins": 18, "Monthly Views": "5%"}
         for col, key in zip([col1, col2, col3], metrics.keys()):
             col.metric(label=key, value=metrics[key], delta=deltas[key])
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Engagement Insights
+        st.divider()
         with st.expander("Engagement Insights"):
             st.write("• Top performing board: Modern Interiors")
             st.write("• Best posting time: 7PM – 9PM")
             st.write("• Pin save rate: 8.4%")
 
+    st.markdown('</div>', unsafe_allow_html=True)
+
 # ------------------------------
 # DASHBOARD PAGE
 # ------------------------------
 elif st.session_state.page == "Dashboard":
+
     if not st.session_state.authorized:
         st.warning("You must authorize your Pinterest account first.")
         st.stop()
@@ -124,22 +121,21 @@ elif st.session_state.page == "Dashboard":
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("📊 Analytics Dashboard")
 
-    # Sample Charts
-    st.subheader("Monthly Views")
-    df_views = pd.DataFrame({
-        "Month": ["Jan","Feb","Mar","Apr","May","Jun"],
-        "Views": [80_000, 90_000, 95_000, 110_000, 120_000, 124_000]
-    })
-    fig_views = px.line(df_views, x="Month", y="Views", markers=True, template="plotly_dark")
-    st.plotly_chart(fig_views, use_container_width=True)
-
+    # Metrics Table
     st.subheader("Pins per Board")
     df_pins = pd.DataFrame({
         "Board": ["Home Decor", "Fashion", "Travel", "Food", "Tech"],
         "Pins": [120, 85, 60, 50, 35]
     })
-    fig_pins = px.bar(df_pins, x="Board", y="Pins", template="plotly_dark", color="Pins", color_continuous_scale=px.colors.sequential.Pinkyl)
-    st.plotly_chart(fig_pins, use_container_width=True)
+    st.table(df_pins)
+
+    # Monthly Views Line Chart
+    st.subheader("Monthly Views")
+    df_views = pd.DataFrame({
+        "Month": ["Jan","Feb","Mar","Apr","May","Jun"],
+        "Views": [80_000, 90_000, 95_000, 110_000, 120_000, 124_000]
+    })
+    st.line_chart(df_views.set_index("Month"))
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -147,21 +143,22 @@ elif st.session_state.page == "Dashboard":
 # PRIVACY PAGE
 # ------------------------------
 elif st.session_state.page == "Privacy Policy":
+
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("🛡️ Privacy & Data Policy")
 
     st.markdown("""
 ### 1. Data Collection
 BoardFlow uses official OAuth 2.0 protocols.  
-We never access your password.
+We never access your Pinterest password.
 
 ### 2. Data Usage
 Only boards and pins you authorize are accessed.
 
 ### 3. Data Storage
-No permanent external storage.
+No permanent external storage. Processing occurs in your active session.
 
 ### 4. Revocation
-You may revoke access anytime in Pinterest's Apps and Websites settings.
+You may revoke access anytime via Pinterest's Apps and Websites settings.
 """)
     st.markdown('</div>', unsafe_allow_html=True)
