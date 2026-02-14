@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import time
 
 # ------------------------------
 # PAGE CONFIG
@@ -12,7 +11,7 @@ st.set_page_config(
 )
 
 # ------------------------------
-# SESSION STATE (Router + Auth)
+# SESSION STATE
 # ------------------------------
 if "page" not in st.session_state:
     st.session_state.page = "Home"
@@ -33,7 +32,6 @@ st.markdown("""
     font-family: 'Inter', sans-serif;
 }
 
-/* Glass cards */
 .glass-card {
     background: rgba(30, 41, 59, 0.85);
     border-radius: 20px;
@@ -44,7 +42,6 @@ st.markdown("""
     text-align: center;
 }
 
-/* Buttons */
 .stButton>button {
     background: #ec4899;
     color: white;
@@ -59,7 +56,6 @@ st.markdown("""
     transform: scale(1.02);
 }
 
-/* Dividers */
 hr {
     border: 1px solid rgba(255,255,255,0.1);
 }
@@ -77,7 +73,7 @@ with st.sidebar:
     st.caption("© 2026 BoardFlow Digital")
 
 # ------------------------------
-# ROUTER LOGIC
+# ROUTER / PAGES
 # ------------------------------
 page = st.session_state.page
 
@@ -90,6 +86,7 @@ if page == "Home":
     st.markdown("##### Professional Pinterest Business Intelligence")
     st.divider()
 
+    # Authorization
     if not st.session_state.authorized:
         if st.button("Authorize Pinterest Account"):
             st.session_state.authorized = True
@@ -97,7 +94,7 @@ if page == "Home":
     else:
         st.success("Authorized!")
 
-        # Dashboard Metrics Preview
+        # Metrics preview
         col1, col2, col3 = st.columns(3)
         metrics = {"Boards": 12, "Pins": 482, "Monthly Views": 124_000}
         deltas = {"Boards": 2, "Pins": 18, "Monthly Views": "5%"}
@@ -110,7 +107,7 @@ if page == "Home":
             st.write("• Best posting time: 7PM – 9PM")
             st.write("• Pin save rate: 8.4%")
 
-    # Link to Privacy Policy as a “full page”
+    # Button to go to Privacy Policy
     if st.button("View Privacy Policy"):
         st.session_state.page = "Privacy Policy"
 
@@ -127,7 +124,7 @@ elif page == "Dashboard":
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.title("📊 Analytics Dashboard")
 
-    # Metrics Table
+    # Pins Table
     st.subheader("Pins per Board")
     df_pins = pd.DataFrame({
         "Board": ["Home Decor", "Fashion", "Travel", "Food", "Tech"],
@@ -135,7 +132,7 @@ elif page == "Dashboard":
     })
     st.table(df_pins)
 
-    # Monthly Views Line Chart
+    # Monthly Views Chart
     st.subheader("Monthly Views")
     df_views = pd.DataFrame({
         "Month": ["Jan","Feb","Mar","Apr","May","Jun"],
@@ -167,7 +164,7 @@ No permanent external storage. Processing occurs in your active session.
 You may revoke access anytime via Pinterest's Apps and Websites settings.
 """)
 
-    # Button to go back to Home page
+    # Back to Home button
     if st.button("← Back to Home"):
         st.session_state.page = "Home"
 
