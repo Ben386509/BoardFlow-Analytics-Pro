@@ -1,21 +1,19 @@
-Privacy Policy for BoardFlow
+Privacy Policy for BoardFlow Pro
 
 Effective Date: 14 February 2026
 
-1. Information We Collect
+1. Data Collection
 
-BoardFlow collects only the information that you expressly authorise through the Pinterest OAuth 2.0 authentication process.
+BoardFlow connects to the Pinterest API by means of OAuth 2.0 authentication. We neither request nor retain your Pinterest password at any stage of this process.
 
-We do not collect, access, or store your Pinterest password at any time.
+2. Data Usage
 
-2. How We Use Data
+We access only such data, including Boards and Pins, as you expressly authorise. Said data is utilised solely for the purpose of generating and presenting your analytics dashboard within BoardFlow Pro.
 
-Authorised Board and Pin data are used solely for display and analytical purposes within the BoardFlow dashboard.
+3. Data Storage
 
-We do not sell, distribute, or share your data with third parties.
+BoardFlow does not store Pinterest user data on any external servers. All processing of authorised data takes place strictly within the confines of your active session.
 
-3. Data Revocation
+4. Revocation
 
-You may revoke BoardFlow’s access at any time via your Pinterest account settings under “Apps and Websites”.
-
-Upon revocation, BoardFlow will no longer have access to your authorised data.
+Users may withdraw access at any time through the Pinterest “Apps and Websites” settings within their account.
